@@ -1,5 +1,7 @@
 export type RecipeStatus = 'draft' | 'confirmed'
 
+export type MealCategory = '早餐' | '正餐' | '小吃' | '甜品' | '饮品' | '其他'
+
 export interface RecipeIngredient {
     name: string;
     amount?: number;
@@ -17,6 +19,7 @@ export interface Recipe {
     id: string;
     groupId: string;
     name: string;
+    mealCategory: MealCategory;
     category: string;
     servings?: number;
     prepMinutes?: number;

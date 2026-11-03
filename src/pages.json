@@ -11,6 +11,12 @@
 			"style": {
 				"navigationBarTitleText": "添加菜谱"
 			}
+		},
+		{
+			"path": "pages/order-menu/index",
+			"style": {
+				"navigationBarTitleText": "开始点菜"
+			}
 		}
 	],
 	"globalStyle": {

@@ -7,54 +7,35 @@
 
     <view class="actions">
       <button class="action-button" @click="goToAddRecipe">添加菜谱</button>
-      <button class="action-button" @click="showComingSoon">开始点菜</button>
+      <button class="action-button" @click="goToOrderMenu">开始点菜</button>
     </view>
 
     <view class="section-title"> 菜谱列表 </view>
 
     <view class="recipe-grid">
-      <view v-for="recipe in recipes" :key="recipe.id" class="recipe-card">
-        <image v-if="recipe.coverImage" class="recipe-cover" :src="recipe.coverImage" mode="aspectFill" />
-
-        <view v-else class="recipe-cover recipe-cover-placeholder">
-          <text>暂无封面</text>
-        </view>
-
-        <view class="recipe-info">
-          <text class="recipe-name">{{ recipe.name }}</text>
-          <text class="recipe-category">
-            {{ recipe.category || '家常菜' }}
-          </text>
-
-          <view class="recipe-meta">
-            <text>{{ recipe.cookMinutes || 0 }} 分钟</text>
-            <text>制作 {{ recipe.cookCount || 0 }} 次</text>
-          </view>
-        </view>
+      <view v-for="recipe in recipes" :key="recipe.id" class="recipe-item">
+        <RecipeCard :recipe="recipe" />
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
+import { router } from '@/router'
 import { useRecipeStore } from '@/stores/recipe'
+import RecipeCard from '@/components/RecipeCard.vue'
 
 const recipeStore = useRecipeStore()
 
 const recipes = computed(() => recipeStore.recipes)
 
-function showComingSoon() {
-  uni.showToast({
-    title: '功能暂未开放',
-    icon: 'none'
-  })
+function goToAddRecipe() {
+  router.push({ name: 'addRecipe' })
 }
 
-function goToAddRecipe() {
-  uni.navigateTo({
-    url: '/pages/add-recipe/index',
-  })
+function goToOrderMenu() {
+  router.push({ name: 'orderMenu' })
 }
 </script>
 
@@ -119,60 +100,10 @@ function goToAddRecipe() {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  gap: 20rpx 0;
 }
 
-.recipe-card {
-  overflow: hidden;
+.recipe-item {
   width: calc(50% - 10rpx);
-  margin-bottom: 20rpx;
-  background: #fff;
-  border-radius: 18rpx;
-}
-
-.recipe-cover {
-  display: block;
-  width: 100%;
-  height: 220rpx;
-}
-
-.recipe-cover-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #aaa;
-  background: #e9eee9;
-  font-size: 24rpx;
-}
-
-.recipe-info {
-  padding: 18rpx;
-}
-
-.recipe-name {
-  display: block;
-  overflow: hidden;
-  color: #222;
-  font-size: 28rpx;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.recipe-category {
-  display: inline-block;
-  margin-top: 12rpx;
-  padding: 5rpx 12rpx;
-  color: #39966d;
-  background: #eaf6ef;
-  border-radius: 20rpx;
-  font-size: 21rpx;
-}
-
-.recipe-meta {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 16rpx;
-  color: #999;
-  font-size: 21rpx;
 }
 </style>

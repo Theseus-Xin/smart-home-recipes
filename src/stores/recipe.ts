@@ -7,6 +7,7 @@ const initialRecipe: Recipe[] = [{
     groupId: 'demo-group',
     name: '番茄炒蛋',
     category: '主菜',
+    mealCategory: '正餐',
     servings: 2,
     prepMinutes: 5,
     cookMinutes: 10,
@@ -53,10 +54,20 @@ export const useRecipeStore = defineStore('recipe', () => {
         return recipes.value.find(recipe => recipe.id === id)
     }
 
+    function incrementCookCount(id: string) {
+        const recipe = recipes.value.find((item) => item.id === id)
+
+        if (recipe) {
+            recipe.cookCount = (recipe.cookCount || 0) + 1
+        }
+    }
+
+
     return {
         recipes,
         recipeCount,
         addRecipe,
         getRecipeById,
+        incrementCookCount,
     }
 })

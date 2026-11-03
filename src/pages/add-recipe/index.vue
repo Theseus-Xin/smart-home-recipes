@@ -57,6 +57,22 @@
                 </view>
 
                 <view class="field">
+                    <text class="field-label">菜品分类</text>
+
+                    <picker mode="selector" :range="mealCategories" :value="mealCategoryIndex"
+                        @change="onMealCategoryChange">
+                        <view class="picker-input">
+                            <text>{{ mealCategory }}</text>
+                            <text class="picker-arrow">›</text>
+                        </view>
+                    </picker>
+
+                    <text class="field-hint">
+                        已根据内容初步识别，可点击修改
+                    </text>
+                </view>
+
+                <view class="field">
                     <text class="field-label">烹饪时间</text>
                     <view class="minutes-input">
                         <input v-model="cookMinutes" class="text-input" type="number" placeholder="30" />
@@ -94,7 +110,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRecipeStore } from '@/stores/recipe'
-import type { Recipe, RecipeStep } from '@/types/recipe'
+import type { Recipe, RecipeStep, MealCategory } from '@/types/recipe'
 
 const recipeStore = useRecipeStore()
 
@@ -103,11 +119,32 @@ const generated = ref(false)
 
 const recipeName = ref('')
 const cuisine = ref('')
+const mealCategories: MealCategory[] = [
+    '早餐',
+    '正餐',
+    '甜品',
+    '小吃',
+    '饮品',
+]
+
+const mealCategory = ref<MealCategory>('正餐')
+const mealCategoryIndex = computed(() =>
+    mealCategories.indexOf(mealCategory.value),
+)
+
 const cookMinutes = ref(30)
 const coverImage = ref('')
 const steps = ref<RecipeStep[]>([])
 
 const canGenerate = computed(() => sourceText.value.trim().length > 0)
+
+
+function onMealCategoryChange(event: {
+    detail: { value: string | number }
+}) {
+    const index = Number(event.detail.value)
+    mealCategory.value = mealCategories[index] || '正餐'
+}
 
 function detectCuisine(text: string): string {
     if (/川菜|川味|麻辣|花椒|豆瓣酱/.test(text)) return '川菜'
@@ -117,6 +154,15 @@ function detectCuisine(text: string): string {
     if (/日式|寿司|味噌|照烧/.test(text)) return '日式'
     if (/韩式|韩国|泡菜|韩式辣酱/.test(text)) return '韩式'
     return '家常菜'
+}
+
+function detectMealCategory(text: string): MealCategory {
+    if (/甜品|蛋糕|布丁|冰淇淋|糖水|甜汤/.test(text)) return '甜品'
+    if (/早餐|早饭|粥|豆浆|包子|馒头|煎饼|三明治/.test(text)) return '早餐'
+    if (/饮品|果汁|奶茶|咖啡|饮料/.test(text)) return '饮品'
+    if (/小吃|炸串|烧麦|春卷|薯条/.test(text)) return '小吃'
+
+    return '正餐'
 }
 
 function extractRecipeName(text: string): string {
@@ -172,6 +218,7 @@ function generateRecipe() {
 
     recipeName.value = extractRecipeName(text)
     cuisine.value = detectCuisine(text)
+    mealCategory.value = detectMealCategory(text)
     steps.value = extractSteps(text).map((description, index) => ({
         order: index + 1,
         description,
@@ -238,6 +285,7 @@ function saveRecipe() {
         groupId: 'demo-group',
         name,
         category: cuisine.value.trim() || '家常菜',
+        mealCategory: mealCategory.value,
         cookMinutes: Math.max(1, Number(cookMinutes.value) || 30),
         cookCount: 0,
         coverImage: coverImage.value,
@@ -468,6 +516,25 @@ function showComingSoon() {
 
 .cover-plus {
     margin-bottom: 10rpx;
+}
+
+.picker-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 78rpx;
+    padding: 0 20rpx;
+    box-sizing: border-box;
+    color: #333;
+    background: #f8f8f8;
+    border-radius: 12rpx;
+    font-size: 27rpx;
+}
+
+.picker-arrow {
+    color: #999;
+    font-size: 36rpx;
 }
 
 .minutes-input {
